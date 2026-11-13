@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermoregulation — NCLEX Study Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#EFF3F2; --card:#FFFFFF; --ink:#132320; --ink-soft:#4A5C58;
+  --rule:#D3DCD9; --rule-soft:#E4EAE8;
+  --right:#146B54; --right-bg:#E3F1EC;
+  --wrong:#9A3227; --wrong-bg:#F8E6E3;
+  --note:#54399B; --note-bg:#EDE8F8;
+  --flagc:#8A6100; --flag-bg:#FBF0D8;
+  --chip:#E6ECEA; --chip-on:#132320; --chip-on-ink:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#0F1615; --card:#18211F; --ink:#E7EDEB; --ink-soft:#9DAEAA;
+  --rule:#2C3A37; --rule-soft:#232E2C;
+  --right:#58C6A5; --right-bg:#123029;
+  --wrong:#E48B80; --wrong-bg:#33201D;
+  --note:#B9A3F0; --note-bg:#241C3B;
+  --flagc:#E0B64A; --flag-bg:#2E2512;
+  --chip:#232E2C; --chip-on:#E7EDEB; --chip-on-ink:#0F1615;
+}}
+:root[data-theme="dark"]{
+  --page:#0F1615; --card:#18211F; --ink:#E7EDEB; --ink-soft:#9DAEAA;
+  --rule:#2C3A37; --rule-soft:#232E2C;
+  --right:#58C6A5; --right-bg:#123029;
+  --wrong:#E48B80; --wrong-bg:#33201D;
+  --note:#B9A3F0; --note-bg:#241C3B;
+  --flagc:#E0B64A; --flag-bg:#2E2512;
+  --chip:#232E2C; --chip-on:#E7EDEB; --chip-on-ink:#0F1615;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.55}
+.wrap{max-width:52rem;margin:0 auto;padding:0 1.15rem 6rem}
+h1,h2,h3{font-family:"Newsreader",Georgia,serif;font-weight:500;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+.hidden{display:none !important}
+
+/* masthead + mode tabs */
+header.top{padding:2.6rem 0 1.1rem}
+header.top h1{font-size:clamp(1.65rem,4.6vw,2.5rem);line-height:1.1;margin:0 0 .4rem;max-width:32ch}
+header.top p{margin:0;color:var(--ink-soft);font-size:.92rem;max-width:60ch}
+.modes{display:flex;gap:.3rem;border-bottom:1px solid var(--rule);margin-top:1.3rem}
+.mode{background:none;border:none;padding:.55rem .9rem;color:var(--ink-soft);font-size:.93rem;
+  font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.mode[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--right)}
+
+/* shared bits */
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chip{background:var(--chip);color:var(--ink);border:none;border-radius:2rem;
+  padding:.3rem .72rem;font-size:.8rem;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-ink)}
+.btn{background:var(--ink);color:var(--card);border:none;border-radius:.4rem;
+  padding:.5rem 1.05rem;font-size:.9rem;font-weight:500}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn.small{padding:.3rem .7rem;font-size:.82rem}
+select,input[type=number]{font:inherit;font-size:.88rem;color:var(--ink);background:var(--card);
+  border:1px solid var(--rule);border-radius:.35rem;padding:.32rem .45rem}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--page);border-bottom:1px solid var(--rule);
+  padding:.7rem 0;display:flex;flex-wrap:wrap;gap:.5rem .6rem;align-items:center}
+.toolbar label{font-size:.8rem;color:var(--ink-soft)}
+select.jump{max-width:min(21rem,100%)}
+.tally{margin-left:auto;font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.tally b{color:var(--ink);font-weight:600}
+
+/* question card */
+section.slide{padding-top:2.4rem}
+section.slide>h2{font-size:1.3rem;margin:0 0 .1rem}
+section.slide>.meta{font-size:.78rem;color:var(--ink-soft);margin:0 0 1rem}
+article.q{background:var(--card);border:1px solid var(--rule-soft);border-radius:.55rem;
+  padding:1.1rem 1.15rem 1.15rem;margin-bottom:.85rem}
+.qhead{display:flex;gap:.55rem;align-items:baseline;margin-bottom:.5rem;flex-wrap:wrap}
+.qnum{font-size:.78rem;font-weight:600;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.qtype{font-size:.7rem;font-weight:600;color:var(--ink-soft);border:1px solid var(--rule);
+  border-radius:.3rem;padding:.06rem .38rem}
+.qslide{font-size:.7rem;color:var(--ink-soft)}
+.stem{font-family:"Newsreader",Georgia,serif;font-size:1.09rem;line-height:1.45;margin:0 0 .8rem;max-width:64ch}
+ul.opts{list-style:none;margin:0 0 .8rem;padding:0;display:flex;flex-direction:column;gap:.3rem}
+.opt{display:flex;gap:.6rem;align-items:flex-start;width:100%;text-align:left;background:transparent;
+  border:1px solid var(--rule-soft);border-radius:.4rem;padding:.5rem .65rem;color:var(--ink);
+  font-size:.94rem;line-height:1.45}
+.opt:hover:not(:disabled){border-color:var(--rule)}
+.opt:focus-visible{outline:2px solid var(--right);outline-offset:1px}
+.opt .box{flex:none;width:1.15rem;height:1.15rem;margin-top:.12rem;border:1px solid var(--rule);
+  border-radius:.25rem;display:grid;place-items:center;font-size:.72rem;font-weight:600;color:var(--ink-soft)}
+.opt.round .box{border-radius:50%}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--chip)}
+.opt[aria-pressed="true"] .box{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.opt.correct{border-color:var(--right);background:var(--right-bg)}
+.opt.correct .box{background:var(--right);border-color:var(--right);color:var(--card)}
+.opt.missed{border-color:var(--right);border-style:dashed}
+.opt.incorrect{border-color:var(--wrong);background:var(--wrong-bg)}
+.opt.incorrect .box{background:var(--wrong);border-color:var(--wrong);color:var(--card)}
+.opt:disabled{cursor:default;opacity:1}
+.bank{border:1px dashed var(--rule);border-radius:.4rem;padding:.6rem .75rem;margin:0 0 .8rem;font-size:.9rem}
+.bank ol{margin:.25rem 0 0;padding-left:1.35rem}
+.bank .lbl{font-size:.78rem;color:var(--ink-soft)}
+.pairs{display:flex;flex-direction:column;gap:.45rem;margin:0 0 .8rem}
+.pair{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.pair .prompt{flex:1 1 12rem;font-size:.94rem}
+.pair .verdict{font-size:.82rem;font-weight:600}
+.pair.ok .verdict{color:var(--right)}
+.pair.no .verdict{color:var(--wrong)}
+.rat{margin-top:.8rem;border-top:1px solid var(--rule-soft);padding-top:.7rem;font-size:.92rem;
+  color:var(--ink-soft);max-width:66ch}
+.rat .ans{color:var(--ink);font-weight:600;display:block;margin-bottom:.2rem}
+.note{margin-top:.7rem;border-left:3px solid var(--note);background:var(--note-bg);
+  padding:.55rem .75rem;border-radius:0 .35rem .35rem 0;font-size:.88rem;max-width:66ch}
+.note .t{color:var(--note);font-weight:600}
+
+/* exam setup */
+.panel{background:var(--card);border:1px solid var(--rule-soft);border-radius:.55rem;
+  padding:1.15rem 1.2rem;margin:1.6rem 0}
+.panel h2{font-size:1.25rem;margin:0 0 .3rem}
+.panel .sub{color:var(--ink-soft);font-size:.9rem;margin:0 0 1.1rem;max-width:60ch}
+.field{margin-bottom:1.6rem}
+.field>.h,.panel>.h{font-size:1rem;font-weight:600;margin-bottom:.15rem}
+.panel>.h{margin:1.3rem 0 .2rem;font-size:.88rem}
+main>h2{font-size:1.4rem;margin:2.4rem 0 .15rem}
+.field>.d{font-size:.84rem;color:var(--ink-soft);margin-bottom:.6rem;max-width:58ch}
+.choices{display:flex;flex-direction:column;gap:.45rem}
+.choice{display:flex;gap:.7rem;align-items:flex-start;width:100%;text-align:left;
+  background:transparent;border:1px solid var(--rule);border-radius:.45rem;
+  padding:.7rem .85rem;color:var(--ink);font-size:.95rem}
+.choice:hover:not(:disabled){border-color:var(--ink-soft)}
+.choice:focus-visible{outline:2px solid var(--right);outline-offset:1px}
+.choice[aria-pressed="true"]{border-color:var(--right);background:var(--right-bg)}
+.choice .dot{flex:none;width:1.1rem;height:1.1rem;margin-top:.2rem;border-radius:50%;
+  border:1px solid var(--rule);display:grid;place-items:center}
+.choice[aria-pressed="true"] .dot{border-color:var(--right)}
+.choice[aria-pressed="true"] .dot::after{content:"";width:.55rem;height:.55rem;
+  border-radius:50%;background:var(--right)}
+.choice .t{font-weight:500}
+.choice .s{display:block;font-size:.83rem;color:var(--ink-soft);font-weight:400;margin-top:.1rem}
+.choice:disabled{opacity:.5;cursor:not-allowed}
+.picker{margin:.5rem 0 .1rem 1.8rem}
+.picker select{max-width:min(26rem,100%);width:100%}
+.sizes{display:flex;gap:.4rem;flex-wrap:wrap}
+.size{flex:1 1 4.5rem;min-width:4rem;background:transparent;border:1px solid var(--rule);
+  border-radius:.45rem;padding:.65rem .4rem;text-align:center;font-weight:500;color:var(--ink);font-size:.95rem}
+.size:hover:not([aria-pressed="true"]){border-color:var(--ink-soft)}
+.size[aria-pressed="true"]{border-color:var(--right);background:var(--right-bg);color:var(--right)}
+label.cb{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;margin:.35rem 0}
+input[type=checkbox]{margin:.28rem 0 0;accent-color:var(--right);width:1rem;height:1rem;flex:none}
+details.more{margin-top:.4rem;border-top:1px solid var(--rule-soft);padding-top:.9rem}
+details.more summary{font-size:.86rem;color:var(--ink-soft);cursor:pointer;width:fit-content}
+details.more[open] summary{margin-bottom:.7rem}
+.startbar{border-top:1px solid var(--rule);margin-top:1.3rem;padding-top:1.1rem}
+.startbar .btn{padding:.6rem 1.5rem;font-size:.95rem}
+.poolinfo{font-size:.85rem;color:var(--ink-soft);margin-top:.6rem;max-width:56ch}
+.poolinfo b{color:var(--ink)}
+.warn{color:var(--flagc);font-size:.84rem;background:var(--flag-bg);border-radius:.35rem;
+  padding:.45rem .65rem;margin-top:.6rem;max-width:56ch}
+.poolbar{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-top:1.2rem}
+
+/* exam runner */
+.examtop{position:sticky;top:0;z-index:20;background:var(--page);border-bottom:1px solid var(--rule);
+  padding:.65rem 0;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.prog{flex:1 1 8rem;height:.32rem;background:var(--rule-soft);border-radius:2rem;overflow:hidden;min-width:6rem}
+.prog i{display:block;height:100%;background:var(--right);width:0}
+.examtop .pos{font-size:.84rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.timer{font-size:.84rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.navgrid{display:flex;flex-wrap:wrap;gap:.25rem;margin:1.2rem 0}
+.navbtn{width:2rem;height:2rem;border:1px solid var(--rule);background:var(--card);border-radius:.3rem;
+  font-size:.76rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;padding:0}
+.navbtn.done{background:var(--chip);color:var(--ink);border-color:var(--rule)}
+.navbtn.flag{border-color:var(--flagc);color:var(--flagc)}
+.navbtn.here{outline:2px solid var(--right);outline-offset:1px}
+.navbtn.ok{background:var(--right-bg);border-color:var(--right);color:var(--right)}
+.navbtn.bad{background:var(--wrong-bg);border-color:var(--wrong);color:var(--wrong)}
+.runnav{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:1rem}
+.runnav .sp{margin-left:auto}
+
+/* results */
+.scorebig{font-family:"Newsreader",Georgia,serif;font-size:3.4rem;line-height:1;margin:.2rem 0 .1rem}
+.scoresub{color:var(--ink-soft);font-size:.95rem;margin-bottom:1.2rem}
+table.bd{width:100%;border-collapse:collapse;font-size:.88rem;margin:.4rem 0 0}
+table.bd th,table.bd td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--rule-soft)}
+table.bd th{font-size:.78rem;color:var(--ink-soft);font-weight:600}
+table.bd td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.gridwrap{overflow-x:auto;margin:.6rem 0}
+table.matrix{border-collapse:collapse;width:100%;font-size:.92rem}
+table.matrix th,table.matrix td{border:1px solid var(--rule);padding:.4rem .55rem}
+table.matrix th{font-size:.82rem;color:var(--ink-soft);font-weight:600;text-align:left}
+table.matrix th.col{text-align:center;width:8.5rem}
+table.matrix td.rowlab{text-align:left}
+table.matrix td.cell{text-align:center}
+.gbox{width:1.6rem;height:1.6rem;line-height:1;border:1px solid var(--rule);border-radius:.25rem;
+  background:var(--card);color:var(--ink);font-size:.95rem;cursor:pointer;padding:0}
+.gbox.on{border-color:var(--ink);background:var(--chip);font-weight:700}
+.gbox.correct{background:var(--right-bg);border-color:var(--right);color:var(--right)}
+.gbox.missed{background:var(--card);border-color:var(--right);color:var(--right);border-style:dashed}
+.gbox.incorrect{background:var(--wrong-bg);border-color:var(--wrong);color:var(--wrong)}
+.gbox:disabled{cursor:default}
+footer.end{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);
+  font-size:.84rem;color:var(--ink-soft);max-width:62ch}
+footer.end button{background:none;border:none;color:var(--ink-soft);text-decoration:underline;
+  padding:0;font-size:inherit}
+@media (prefers-reduced-motion: no-preference){
+  .rat,.note{animation:rise .2s ease-out}
+  @keyframes rise{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .prog i{transition:width .25s ease}
+}
+@media (max-width:30rem){
+  .tally{margin-left:0;width:100%}
+  .stem{font-size:1.04rem}
+  .scorebig{font-size:2.8rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Thermoregulation</h1>
+  <p><b id="total"></b> questions built from the Thermoregulation lecture, as multiple choice, select all that apply, matching and matrix grid. Study by section, or build yourself a custom exam.</p>
+  <div class="modes" role="tablist">
+    <button class="mode" role="tab" data-mode="study" aria-selected="true">Study by section</button>
+    <button class="mode" role="tab" data-mode="exam" aria-selected="false">Take a practice exam</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer class="end">
+  Built from the <em>Thermoregulation</em> lecture slides and speaker notes.
+  Your exam history is saved in this browser only &mdash; nothing is uploaded, and each person using this
+  link has their own separate history. <button id="wipe">Clear my history</button>
+</footer>
+
+</div>
+<script>
+const QUESTIONS = [{"s": 1, "t": "sata", "q": "Which concepts are connected to thermoregulation, according to the lecture? Select all that apply.", "o": ["Accountability", "Comfort", "Development", "Fluid and electrolytes", "Infection and inflammation", "Elimination"], "a": [0, 1, 2, 3, 4], "r": "The related concepts are accountability, comfort, development, fluid and electrolytes, infection and inflammation.", "id": "s1-1"}, {"s": 1, "t": "mc", "q": "Temperature measurement is delegated to a nursing assistant. Who remains responsible for reviewing the result?", "o": ["The nursing assistant, who took and recorded the reading", "The nurse, who remains responsible for reviewing it", "The provider, who ordered the set of vital signs", "The charge nurse, who assigned the patient that shift"], "a": [1], "r": "Accountability connects to thermoregulation: temperature measurement and recording are delegated to medical technicians and nursing assistants; however, the nurse remains responsible for reviewing the patient's temperature.", "id": "s1-2"}, {"s": 1, "t": "mc", "q": "A patient's temperature climbs to 103°F and they report their incision hurts far more than before. How does the lecture explain this?", "o": ["Fever increases the inflammatory response at the incision site", "As temperature changes significantly, comfort level and tolerance of pain decrease", "Heat increases blood flow to the wound, which increases pain", "Antipyretics reduce the effect of the ordered analgesic"], "a": [1], "r": "Comfort connects to thermoregulation: as temperature increases or decreases significantly, comfort level and tolerance of pain decrease.", "id": "s1-3"}, {"s": 1, "t": "mc", "q": "A febrile patient is sweating profusely. Which connection explains why the nurse monitors their labs?", "o": ["Comfort, because sweating and a rising temperature reduce tolerance of pain", "Fluid and electrolytes, because increased sweating causes fluid and electrolyte loss", "Infection, because sweating means the immune response has begun to resolve", "Accountability, because the nurse must document each episode of sweating"], "a": [1], "r": "Fluid and electrolytes connects to thermoregulation: increased temperature leads to increased sweating, which leads to fluid and electrolyte loss.", "id": "s1-4"}, {"s": 1, "t": "mc", "q": "Why does an increase in body temperature help the body fight an infection?", "o": ["Heat directly destroys the cell walls of bacteria", "Most bacteria and viruses that produce infections thrive at normal temperatures", "Heat increases the rate at which antibiotics reach the tissue", "Heat reduces the inflammatory response at the site"], "a": [1], "r": "Infection connects to thermoregulation: most bacteria and viruses that produce infections thrive at normal temperatures, so an increase in body temperature helps the body fight the infection. A fever also alerts the immune system to increase production of white blood cells and antibodies.", "id": "s1-5"}, {"s": 1, "t": "mc", "q": "An injury site is red and warm to the touch. Which connection explains this localized thermic response?", "o": ["Comfort, because warmth at the site reduces the pain of the injury", "Inflammation, because vessels constrict then dilate and the blood flow causes heat", "Infection, because the invading pathogen raises the temperature of the tissue", "Fluid and electrolytes, because fluid shifting into the tissue carries heat with it"], "a": [1], "r": "Inflammation connects to thermoregulation: in the first stage of inflammation blood vessels constrict, then dilate. The increased blood flow (hyperemia) causes redness and heat at the injury site, which is a localized thermic response.", "id": "s1-6"}, {"s": 2, "t": "mc", "q": "What is the normothermia range?", "o": ["95.0°F to 99.0°F", "96.8°F to 100.4°F", "97.6°F to 99.6°F", "98.0°F to 101.0°F"], "a": [1], "r": "Normothermia is 96.8°F to 100.4°F: when the amount of heat produced by the body equals the amount of heat lost.", "id": "s2-1"}, {"s": 2, "t": "sata", "q": "Which are sources of heat production? Select all that apply.", "o": ["Basal metabolic rate", "Muscle activity", "Thyroxine (T4) output", "Epinephrine, norepinephrine and sympathetic stimulation", "Fever", "Evaporation"], "a": [0, 1, 2, 3, 4], "r": "The sources of heat production are basal metabolic rate, which decreases with age, muscle activity, which includes shivering, thyroxine (T4) output, epinephrine, norepinephrine and sympathetic stimulation, and fever. Evaporation is a form of heat loss, not heat production.", "id": "s2-2"}, {"s": 2, "t": "mc", "q": "What happens to basal metabolic rate with age?", "o": ["It increases with age", "It decreases with age", "It remains constant throughout life", "It increases until age 75, then falls"], "a": [1], "r": "BMR decreases with age, which is one reason older adults have more difficulty producing heat.", "id": "s2-3"}, {"s": 2, "t": "mc", "q": "How does increased thyroxine raise body temperature?", "o": ["It acts directly on the hypothalamus to raise the temperature set point", "It increases the release of epinephrine, which accelerates cellular metabolism", "It increases heat production by stimulating skeletal muscle to shiver", "It reduces heat loss by causing vasoconstriction of the vessels of the skin"], "a": [1], "r": "Increased thyroxine levels cause an increase in the release of epinephrine, which in turn accelerates the cellular metabolic rate throughout the body.", "id": "s2-4"}, {"s": 2, "t": "mc", "q": "What is chemical thermogenesis?", "o": ["Heat produced as a by-product of muscle contraction", "Stimulation of heat production in the body through increased cellular metabolism", "The transfer of heat from the body core to the skin surface", "The release of heat during the evaporation of sweat"], "a": [1], "r": "Chemical thermogenesis is the stimulation of heat production in the body through increased cellular metabolism. Examples of cellular metabolism include ATP synthesis and protein synthesis.", "id": "s2-5"}, {"s": 3, "t": "match", "q": "Match each type of heat loss to its definition.", "p": [["Conduction", "Heat transfer through physical contact of one surface to another"], ["Convection", "Heat transfer through the fluid motion of air or water across the skin"], ["Radiation", "Heat transfer with no physical contact"], ["Evaporation", "The process of converting water into vapor"]], "r": "Conduction transfers heat by physical contact, convection by the fluid motion of air or water across the skin, radiation with no physical contact, and evaporation by converting water into vapor.", "id": "s3-1"}, {"s": 3, "t": "mc", "q": "Heat loss from the hospital room temperature being set at 65°F is which type?", "o": ["Conduction", "Convection", "Radiation", "Evaporation"], "a": [2], "r": "Heat loss from the hospital room temperature being set at 65°F is radiation, because there is no physical contact.", "id": "s3-2"}, {"s": 3, "t": "mc", "q": "Heat loss from amniotic fluid on a baby's skin is which type?", "o": ["Conduction", "Convection", "Radiation", "Evaporation"], "a": [3], "r": "Heat loss from amniotic fluid on the baby's skin is evaporation, the process of converting water into vapor.", "id": "s3-3"}, {"s": 3, "t": "mc", "q": "Heat loss from a patient lying on a cold surgical table is which type?", "o": ["Conduction", "Convection", "Radiation", "Evaporation"], "a": [0], "r": "Heat loss from a patient lying on a cold surgical table is conduction, because heat transfers through physical contact of one surface to another.", "id": "s3-4"}, {"s": 3, "t": "mc", "q": "Heat loss from being outside on a windy day is which type?", "o": ["Conduction", "Convection", "Radiation", "Evaporation"], "a": [1], "r": "Heat loss from being outside on a windy day is convection, which is heat transfer through the fluid motion of air, meaning drafts.", "id": "s3-5"}, {"s": 4, "t": "mc", "q": "What do the sensors do, and where are they found?", "o": ["They control core temperature, and are found only in the hypothalamus", "They detect cold and heat, and are mainly in the skin and in blood vessels", "They activate in response to signals, and are found in the sweat glands and muscles", "They produce heat on demand, and are found in skeletal muscle and brown fat"], "a": [1], "r": "Sensors are mainly in the skin, but they are also located in places like our blood vessels and hypothalamus. They detect cold and heat.", "id": "s4-1"}, {"s": 4, "t": "mc", "q": "What is the role of the hypothalamus in thermoregulation?", "o": ["It detects cold and heat at the skin surface", "It is the center that controls core temperature", "It carries out the response that the sensors call for", "It produces heat through increased cellular metabolism"], "a": [1], "r": "The hypothalamus is the center that controls core temperature. Thermoregulation is a negative feedback system: if the body is too hot it will attempt to cool it down, and vice versa.", "id": "s4-2"}, {"s": 4, "t": "mc", "q": "What is the effector system?", "o": ["The sensors in the skin and blood vessels that detect cold and heat", "The parts of the body that activate in response to the hypothalamus", "The center in the brain that controls and regulates core temperature", "The negative feedback loop that compares actual to set temperature"], "a": [1], "r": "The effector system is the parts and systems of the body that activate in response to the stimulus the hypothalamus sends out: the sweat glands, the muscles shivering to produce heat, and the vessels that vasodilate or vasoconstrict.", "id": "s4-3"}, {"s": 5, "t": "mc", "q": "At what core temperature does hyperthermia begin?", "o": ["Greater than 99.6°F", "Greater than 100.4°F", "Greater than 102.0°F", "Greater than 104.0°F"], "a": [1], "r": "Hyperthermia is a core temperature greater than 100.4°F, when more heat is produced than is lost.", "id": "s5-1"}, {"s": 5, "t": "mc", "q": "What is a fever?", "o": ["A loss of the body's ability to control its temperature", "A controlled response to infection or inflammation", "An uncontrolled rise in temperature from excessive heat exposure", "Any core temperature above 99.6°F"], "a": [1], "r": "A fever is a controlled response to infection or inflammation. It is a form of hyperthermia, but unlike heat related illnesses the body is still in control of the response.", "id": "s5-2"}, {"s": 5, "t": "grid", "q": "Place each characteristic in the correct column for fever versus heat related illnesses.", "rows": ["Controlled response to infection or inflammation", "Core temperature greater than 100.4°F", "More heat is produced than is lost", "The body loses its ability to control its temperature", "Includes heat exhaustion and heat stroke"], "cols": ["Fever", "Both", "Heat related illnesses"], "a": [[0], [1], [1], [2], [2]], "r": "Fever is the controlled response to infection or inflammation. Both share a core temperature greater than 100.4°F and more heat produced than lost. Heat related illnesses, which include heat exhaustion and heat stroke, are where the body loses its ability to control its temperature.", "rowHead": "Characteristic", "id": "s5-3"}, {"s": 5, "t": "mc", "q": "What does febrile mean?", "o": ["Without a fever", "With a fever", "A fever that has broken", "A fever of unknown origin"], "a": [1], "r": "Febrile means with a fever. Afebrile means without a fever.", "id": "s5-4"}, {"s": 6, "t": "mc", "q": "What causes heat exhaustion?", "o": ["Infection or inflammation raising the hypothalamic set point", "Excessive heat exposure plus a loss of body fluid and salt leading to severe hypovolemia", "A failure of the hypothalamus to regulate temperature at all", "High environmental temperature with high humidity preventing sweat from evaporating"], "a": [1], "r": "Heat exhaustion results from excessive heat exposure and a loss of body fluid and salt, which leads to severe hypovolemia, low blood pressure and weakness.", "id": "s6-1"}, {"s": 6, "t": "sata", "q": "A client is brought in after working outdoors in the heat. Which findings are consistent with heat exhaustion? Select all that apply.", "o": ["Pallor", "Dizziness", "Nausea and vomiting", "Fainting", "A moderately increased temperature", "Hot, dry skin with no sweating"], "a": [0, 1, 2, 3, 4], "r": "The signs of heat exhaustion are pallor, dizziness, nausea, vomiting, fainting and a moderately increased temperature. Hot dry skin with no sweating is a sign of heat stroke, not heat exhaustion.", "id": "s6-2"}, {"s": 6, "t": "sata", "q": "Which factors can trigger heat exhaustion? Select all that apply.", "o": ["Hot weather", "Strenuous activity", "Dehydration", "Alcohol use", "Overdressing", "A viral infection"], "a": [0, 1, 2, 3, 4], "r": "Heat exhaustion can be triggered by hot weather, strenuous activity, dehydration, alcohol use, overdressing and certain medications. A viral infection would cause a fever, not heat exhaustion.", "id": "s6-3"}, {"s": 7, "t": "mc", "q": "At what temperature does heat stroke occur?", "o": ["Greater than 100.4°F", "Greater than 102°F", "Greater than 104°F to 106°F", "Greater than 108°F"], "a": [2], "r": "Heat stroke occurs at a temperature greater than 104°F to 106°F and is the most severe form of heat related illness.", "id": "s7-1"}, {"s": 7, "t": "mc", "q": "Why does high humidity contribute to heat stroke?", "o": ["It increases heat transfer to the body by conduction", "Sweat cannot evaporate, so the body cannot cool itself", "It causes the skin vessels to vasoconstrict", "It increases the body's basal metabolic rate"], "a": [1], "r": "Heat stroke results from a high environmental temperature combined with high humidity: with high humidity, sweat cannot evaporate, so the body loses its primary way of cooling down.", "id": "s7-2"}, {"s": 7, "t": "sata", "q": "Which findings would the nurse expect in a client with heat stroke? Select all that apply.", "o": ["Hot, dry skin", "Absence of sweating", "Cognitive decline or unconsciousness", "Signs of cerebral edema", "Pallor with profuse sweating"], "a": [0, 1, 2, 3], "r": "In heat stroke the hypothalamus loses its ability to regulate temperature, so patients often do not sweat and the skin is hot and dry. Cognitive decline and unconsciousness occur, and cerebral edema develops as the blood brain barrier breaks down. Pallor with profuse sweating is heat exhaustion.", "id": "s7-3"}, {"s": 8, "t": "sata", "q": "Which types of medications increase a client's risk for a heat related illness? Select all that apply.", "o": ["Diuretics", "Medications with anticholinergic properties", "Beta blockers", "Proton pump inhibitors"], "a": [0, 1], "r": "Among the risk factors, the medication types identified are diuretics, which cause dehydration, and anticholinergics or medications with anticholinergic properties, which inhibit sweating.", "id": "s8-1"}, {"s": 8, "t": "mc", "q": "Why do medications with anticholinergic properties increase the risk of a heat related illness?", "o": ["They cause dehydration through increased urine output", "They inhibit sweating", "They raise the hypothalamic set point", "They cause peripheral vasodilation"], "a": [1], "r": "Anticholinergics and medications with anticholinergic properties inhibit sweating, which removes a major route of heat loss. An example is tolterodine (Detrol), used for overactive bladder.", "id": "s8-2"}, {"s": 9, "t": "mc", "q": "Why are fevers sometimes not treated?", "o": ["Antipyretic medications carry too much risk for most patients", "A fever slows pathogen growth and mobilizes the immune response", "Treating a fever masks the underlying source of the infection", "A fever rarely causes enough discomfort to be worth treating"], "a": [1], "r": "Fevers are sometimes not treated because a fever slows the growth of invading pathogens and mobilizes the immune response.", "id": "s9-1"}, {"s": 9, "t": "mc", "q": "Up to what temperature is a fever described as not inherently harmful?", "o": ["102.0°F", "103.5°F", "104.6°F", "105.8°F"], "a": [3], "r": "A fever is not inherently harmful until it reaches 105.8°F.", "id": "s9-2"}, {"s": 9, "t": "mc", "q": "In which clients might a provider postpone treating a low grade fever under 102°F?", "o": ["Only in adults over age 75", "In otherwise healthy children and adults", "Only in critically ill patients", "In any client whose fever has lasted less than 24 hours"], "a": [1], "r": "Treatment of low grade fevers under 102°F may be postponed in otherwise healthy children and adults.", "id": "s9-3"}, {"s": 10, "t": "mc", "q": "What core temperature defines hypothermia?", "o": ["Below 98.6°F", "Below 96.8°F", "Below 95°F", "Below 93°F"], "a": [2], "r": "Hypothermia is a core temperature below 95°F, when more heat is lost than is produced.", "id": "s10-1"}, {"s": 10, "t": "mc", "q": "What is induced, or therapeutic, hypothermia?", "o": ["Unintentional exposure to cold that overwhelms the body's defenses", "The deliberate lowering of body temperature to decrease the metabolic rate", "A controlled reduction in body temperature caused by antipyretic medication", "The cooling of the extremities in order to protect and preserve the body core"], "a": [1], "r": "Induced or therapeutic hypothermia is the deliberate lowering of body temperature to decrease the metabolic rate and reduce the body's need for oxygen. It slows everything down.", "id": "s10-2"}, {"s": 10, "t": "sata", "q": "For which situations is induced hypothermia used? Select all that apply.", "o": ["Head trauma", "Stroke", "Cardiac arrest", "Infants with hypoxic episodes at birth", "Severe frostbite", "Heat stroke with cerebral edema"], "a": [0, 1, 2, 3], "r": "Induced hypothermia is used for head trauma, stroke, cardiac arrest, and infants who have had hypoxic episodes at birth. It slows disease progression and cell death, and is typically induced for 12 to 48 hours.", "id": "s10-3"}, {"s": 10, "t": "mc", "q": "What is accidental hypothermia?", "o": ["The deliberate lowering of body temperature for a therapeutic purpose", "Unintentional exposure to cold that overwhelms the body's ability to maintain temperature", "A loss of the hypothalamus's ability to raise the temperature set point", "A core temperature below 95°F caused by hypothyroidism alone"], "a": [1], "r": "Accidental hypothermia is unintentional exposure to cold that overwhelms the body's ability to maintain temperature, rendering the individual unable to move or shiver and depleting energy stores.", "id": "s10-4"}, {"s": 10, "t": "grid", "q": "Place each characteristic in the correct column for induced versus accidental hypothermia.", "rows": ["Deliberate lowering of body temperature", "Core temperature below 95°F", "More heat is lost than is produced", "Unintentional exposure to cold that overwhelms the body", "Used for head trauma, stroke and cardiac arrest"], "cols": ["Induced hypothermia", "Both", "Accidental hypothermia"], "a": [[0], [1], [1], [2], [0]], "r": "Induced hypothermia is the deliberate lowering of body temperature, used for head trauma, stroke and cardiac arrest. Both forms share a core temperature below 95°F with more heat lost than produced. Accidental hypothermia is unintentional exposure to cold that overwhelms the body.", "rowHead": "Characteristic", "id": "s10-5"}, {"s": 11, "t": "sata", "q": "Which are risk factors or causes of hypothermia? Select all that apply.", "o": ["Being an infant or an older adult", "Immersion in cold water", "Large surface area burns", "Alcohol or drug abuse", "Hypothyroidism", "Hyperthyroidism"], "a": [0, 1, 2, 3, 4], "r": "Risk factors and causes of hypothermia include age (infants and older adults), immersion in cold water, large surface area burns, alcohol or drug abuse, and hypothyroidism. Hyperthyroidism would increase heat production, not decrease it.", "id": "s11-1"}, {"s": 11, "t": "mc", "q": "Why does immersion in cold water increase the risk of hypothermia?", "o": ["Water prevents sweat from evaporating off the skin", "Heat is lost much faster in water than in air", "Water causes peripheral vasodilation", "Water interferes with the skin's cold sensors"], "a": [1], "r": "Immersion in cold water is a risk factor because heat is lost faster in water.", "id": "s11-2"}, {"s": 11, "t": "mc", "q": "Why do large surface area burns increase the risk of hypothermia?", "o": ["Burned tissue produces less heat than intact tissue", "Loss of the epidermis leads to rapid cooling", "Burns cause the hypothalamus to lower its set point", "Burns increase sweating over the unburned skin"], "a": [1], "r": "With large surface area burns, the loss of the epidermis leads to rapid cooling.", "id": "s11-3"}, {"s": 12, "t": "mc", "q": "What is frostbite?", "o": ["A cold injury limited to the outermost layer of the epidermis", "A freezing injury to the skin and the underlying tissue", "Tissue damage caused by prolonged peripheral vasoconstriction without freezing", "Damage caused by the rewarming of chilled tissue"], "a": [1], "r": "Frostbite is a freezing injury to the skin and the underlying tissue. Skin freezes at 23°F, and frostbite is most common on exposed and peripheral areas such as the nose, ears, feet and hands.", "id": "s12-1"}, {"s": 12, "t": "mc", "q": "When does reperfusion damage occur?", "o": ["At the moment the tissue first freezes", "When frozen tissue is rewarmed", "Only after necrosis has already developed", "During the initial period of vasoconstriction"], "a": [1], "r": "Reperfusion damage happens on rewarming frozen tissue.", "id": "s12-2"}, {"s": 12, "t": "sata", "q": "Which findings are part of reperfusion damage? Select all that apply.", "o": ["Vasoconstriction", "Increased vascular permeability causing edema", "An increased risk of clotting", "Redness and pain", "A loss of all sensation in the area"], "a": [0, 1, 2, 3], "r": "Reperfusion damage involves vasoconstriction, increased vascular permeability causing edema, an increased risk of clotting, and redness and pain.", "id": "s12-3"}, {"s": 12, "t": "sata", "q": "Which are signs of superficial frostbite? Select all that apply.", "o": ["Numbness", "Itching", "A prickly feeling", "Skin that is cyanotic, reddened or white", "Blisters and gangrene"], "a": [0, 1, 2, 3], "r": "Superficial frostbite presents with numbness, itching, a prickly feeling, and skin that is cyanotic, reddened or white. Deeper frostbite presents with stiffness and paresthesias. Blisters and gangrene occur as the tissue thaws in deeper injury.", "id": "s12-4"}, {"s": 12, "t": "sata", "q": "As frostbitten tissue thaws, which findings would the nurse expect? Select all that apply.", "o": ["White or yellow skin that has lost its elasticity", "Burning pain", "Edema", "Blisters", "Necrosis and gangrene", "Brisk capillary refill"], "a": [0, 1, 2, 3, 4], "r": "As tissues thaw, the skin is white or yellow and loses its elasticity, with burning pain, edema, blisters, necrosis and gangrene.", "id": "s12-5"}, {"s": 13, "t": "mc", "q": "What is Iloprost (Aurlumyn)?", "o": ["The first FDA approved medication for severe frostbite in adults", "A topical agent applied to frostbitten skin during rewarming", "An anticoagulant approved to prevent clotting in cold injury", "A vasoconstrictor used to limit bleeding in thawed tissue"], "a": [0], "r": "Iloprost (Aurlumyn) is the first FDA approved medication for severe frostbite in adults. It reduces the risk of digit amputation by improving blood flow and preventing clotting.", "id": "s13-1"}, {"s": 13, "t": "sata", "q": "What are the actions of Iloprost? Select all that apply.", "o": ["It vasodilates blood vessels", "It inhibits platelet aggregation", "It vasoconstricts blood vessels", "It increases blood viscosity"], "a": [0, 1], "r": "Iloprost vasodilates blood vessels and inhibits platelet aggregation.", "id": "s13-2"}, {"s": 13, "t": "mc", "q": "What does the vasodilating action of Iloprost do in the body?", "o": ["It lowers systemic blood pressure, which reduces bleeding into the tissue", "It counteracts the vasoconstriction of cold injury, restoring blood flow", "It increases capillary permeability, which allows the edema to resolve", "It slows the metabolism of the injured tissue, reducing its oxygen need"], "a": [1], "r": "Iloprost vasodilates blood vessels, counteracting the vasoconstriction and vasospasm caused by cold injury and restoring blood flow to the tissue.", "id": "s13-3"}, {"s": 13, "t": "mc", "q": "What does inhibiting platelet aggregation do in the body?", "o": ["It thins the blood so it flows more easily through frozen tissue", "It reduces the formation of microthrombi that block the small vessels", "It prevents the increase in vascular permeability", "It reverses the necrosis that has already occurred"], "a": [1], "r": "Iloprost inhibits platelet aggregation, which reduces the formation of microthrombi.", "id": "s13-4"}, {"s": 14, "t": "mc", "q": "When rewarming a hypothermic patient, which area is warmed first?", "o": ["The extremities, then the body core", "The body core, not the extremities", "The head and neck, then the extremities", "All areas simultaneously with a forced air blanket"], "a": [1], "r": "When rewarming, warm the body core first, not the extremities.", "id": "s14-1"}, {"s": 14, "t": "mc", "q": "Why is it dangerous to warm the extremities first in a hypothermic patient?", "o": ["It causes the skin to burn before sensation returns", "It can cause shock and can drive cold blood toward the heart, leading to heart failure", "It raises the core temperature too quickly for the hypothalamus to adjust", "It increases the risk of frostbite in the warmed limbs"], "a": [1], "r": "Warming the extremities first can cause shock, and it can drive cold blood toward the heart, which can lead to heart failure.", "id": "s14-2"}, {"s": 14, "t": "mc", "q": "A patient is unresponsive with a core temperature of 89°F. Which action should the nurse take first?", "o": ["Assess capillary refill", "Hydrate with IV fluids", "Provide a warm blanket", "Remove wet clothing"], "a": [3], "r": "Removing wet clothing is the priority: wet clothing continues to pull heat from the body, so no other warming measure will be effective until it is removed.", "id": "s14-3"}, {"s": 15, "t": "sata", "q": "A hiker is found with suspected hypothermia and no medical help nearby. Which actions are appropriate? Select all that apply.", "o": ["Use body heat, such as skin to skin contact under a blanket", "Apply a warm compress to the neck, chest and groin", "Begin CPR if there is no pulse", "Give a high caloric warm beverage if the person is responsive", "Apply a warm compress to the arms and legs first", "Apply a heating pad directly against the skin"], "a": [0, 1, 2, 3], "r": "Outside the medical environment, rewarm immediately using body heat such as skin to skin contact under a blanket, a warm compress to the neck, chest and groin, CPR if there is no pulse, and a high caloric warm beverage such as hot chocolate if the person is responsive.", "id": "s15-1"}, {"s": 15, "t": "mc", "q": "Why should a warm compress not be applied to the extremities first?", "o": ["It will cause burns in tissue that has already lost its sensation", "It forces cold blood toward the organs and drops the core temperature", "It will trigger violent shivering, which worsens the depletion of energy", "It increases the risk of reperfusion damage in the rewarmed limbs"], "a": [1], "r": "Do not apply a compress to the extremities first: this forces cold blood toward the organs and drops the core temperature, which is a hazardous afterdrop.", "id": "s15-2"}, {"s": 15, "t": "mc", "q": "How should a heating pad or hot water bottle be used when rewarming a hypothermic person?", "o": ["Applied directly against the bare skin for short intervals at a time", "With a towel between the device and the skin, because direct heat is unsafe", "Applied directly against the skin of the hands and feet only", "Applied directly against the bare skin over the chest and groin"], "a": [1], "r": "Do not apply direct heat: place a towel under a heating pad or hot water bottle.", "id": "s15-3"}, {"s": 16, "t": "mc", "q": "What is brown adipose tissue, and what does it do in the newborn?", "o": ["Insulating fat under the skin that reduces heat loss by radiation", "Brown fat used in nonshivering thermogenesis, which produces heat and protects the organs", "Fat stored around the kidneys that is metabolized during shivering", "A layer of fat that develops only after the first six months of life"], "a": [1], "r": "Newborns have immature thermoregulation and rely on brown adipose tissue, or brown fat, which is used for nonshivering thermogenesis to produce heat and protect the organs.", "id": "s16-1"}, {"s": 16, "t": "mc", "q": "Why does a newborn assume a flexed body position?", "o": ["To increase the surface area available for brown fat metabolism", "It decreases the exposed surface area, reducing heat loss", "To keep the extremities warmer than the core", "To reduce the metabolic demand of the muscles"], "a": [1], "r": "The flexed body position decreases the exposed surface area and so reduces heat loss.", "id": "s16-2"}, {"s": 16, "t": "sata", "q": "Why is a newborn's body temperature heavily influenced by the environment? Select all that apply.", "o": ["They have less subcutaneous fat", "They have a thin epidermis", "Their blood vessels are closer to the skin", "They have an excess of brown adipose tissue", "They sweat more than older children"], "a": [0, 1, 2], "r": "A newborn's temperature is labile and heavily influenced by the environment because they have less subcutaneous fat, a thin epidermis, and blood vessels closer to the skin. This is why newborns must be kept warm and dry.", "id": "s16-3"}, {"s": 16, "t": "mc", "q": "At about what age does shivering begin?", "o": ["At birth", "Around 2 months", "Around 6 months", "Around 12 months"], "a": [2], "r": "Newborns do not shiver. Shivering starts around 6 months of age.", "id": "s16-4"}, {"s": 16, "t": "mc", "q": "How does a newborn respond to cold, and why is this a concern?", "o": ["By shivering, which rapidly depletes their limited stores of glycogen", "The metabolic rate increases, which can cause respiratory distress", "By vasodilating the vessels of the skin, which increases heat loss further", "By sweating, which leads to further heat loss through evaporation"], "a": [1], "r": "In response to cold, a newborn's metabolic rate increases, which increases oxygen consumption and can cause respiratory distress.", "id": "s16-5"}, {"s": 16, "t": "mc", "q": "Why may a newborn with an infection not develop a fever?", "o": ["Their brown fat stores are used for heat production instead of a fever", "Their immune system is immature and may not signal the hypothalamus", "Their hypothalamus has not yet developed a temperature set point to raise", "They lose heat faster than the fever response is able to raise it"], "a": [1], "r": "Newborns have an immature immune system that may not signal the hypothalamus to raise their temperature, so an infected newborn may not have a fever.", "id": "s16-6"}, {"s": 17, "t": "sata", "q": "Which considerations apply to thermoregulation in children? Select all that apply.", "o": ["Labile temperatures", "Small stores of glycogen", "Frequent fevers", "Risk for febrile seizures", "A reliance on brown adipose tissue throughout childhood"], "a": [0, 1, 2, 3], "r": "Children have labile temperatures, small stores of glycogen, frequent fevers, and a risk for febrile seizures.", "id": "s17-1"}, {"s": 17, "t": "sata", "q": "Which route considerations apply when measuring a temperature across the lifespan? Select all that apply.", "o": ["For a tympanic temperature in a child age 3 and up, pull the pinna back and up", "Avoid the tympanic route in a child with an ear infection", "The oral route may be used over age 3", "Cerumen interferes with a tympanic temperature in an older adult", "Inspect the anus before a rectal temperature, because older adults are more susceptible to hemorrhoids", "The axillary route is the most reliable site in an older adult"], "a": [0, 1, 2, 3, 4], "r": "For children, the pinna is pulled back and up from age 3 up, the tympanic route is avoided with an ear infection, and the oral route may be used over age 3. For older adults, cerumen interferes with the tympanic route, and the anus should be inspected before a rectal temperature because older adults are more susceptible to hemorrhoids and injury or bleeding should be avoided.", "id": "s17-2"}, {"s": 17, "t": "mc", "q": "What triggers a febrile seizure?", "o": ["Any temperature above 100.4°F sustained for several hours", "A rapid rise in temperature above 101°F with an acute illness", "A fever that is treated too aggressively with antipyretics", "A temperature above 105.8°F from any cause"], "a": [1], "r": "A febrile seizure occurs with a rapid rise in temperature above 101°F with an acute illness. Febrile seizures occur between 6 months and 5 years of age, in about 1 in 25 children, and are more likely if the child has had one before.", "id": "s17-3"}, {"s": 17, "t": "mc", "q": "Why are NSAIDs such as ibuprofen avoided in infants under 6 months of age?", "o": ["Risk of liver damage", "Risk of kidney damage", "Risk of Reye's syndrome", "Risk of gastric bleeding"], "a": [1], "r": "No NSAIDs such as ibuprofen should be given under 6 months of age because of the risk of kidney damage.", "id": "s17-4"}, {"s": 17, "t": "sata", "q": "Which hormonal changes can increase body temperature in adolescents and adults? Select all that apply.", "o": ["Menses", "Puberty", "Menopause", "Pregnancy", "Hypothyroidism"], "a": [0, 1, 2, 3], "r": "In adolescents and adults, hormonal changes that increase body temperature include menses, puberty, menopause and pregnancy.", "id": "s17-5"}, {"s": 17, "t": "mc", "q": "An 84-year-old resident with a urinary tract infection has a temperature of 98.2°F but is suddenly confused. How should the nurse interpret this?", "o": ["The confusion is unrelated to the infection, because there is no fever", "Older adults have atypical signs, and a mental status change may indicate infection", "The infection has resolved, because the temperature is back within normal range", "The confusion indicates developing hypothermia rather than an infection"], "a": [1], "r": "Older adults have atypical signs of infection and may not have a fever. A behavioral or mental status change may indicate an infection.", "id": "s17-6"}, {"s": 17, "t": "sata", "q": "Why are older adults at increased risk for hypothermia? Select all that apply.", "o": ["Decreased subcutaneous fat", "Decreased thermoregulatory control", "Reduced sensory perception", "Decreased activity", "Inadequate diet", "An increased basal metabolic rate"], "a": [0, 1, 2, 3, 4], "r": "Older adults are at increased risk for hypothermia because of decreased subcutaneous fat, decreased thermoregulatory control, reduced sensory perception, decreased activity and inadequate diet. Hypothermia in an older adult may also result from severe sepsis.", "id": "s17-7"}, {"s": 18, "t": "sata", "q": "Which measurement sites are considered core body temperatures? Select all that apply.", "o": ["Esophageal", "Urinary bladder", "Rectal", "Pulmonary artery", "Oral", "Axillary"], "a": [0, 1, 2, 3], "r": "The core body temperatures are esophageal, urinary bladder, rectal and pulmonary artery.", "id": "s18-1"}, {"s": 18, "t": "mc", "q": "Why are core body temperatures considered more reliable?", "o": ["They can be measured more frequently than surface sites", "They remain relatively constant and are not influenced by environmental factors", "They are measured with more accurate equipment", "They respond faster to a change in the hypothalamic set point"], "a": [1], "r": "Core body temperatures are more reliable because they remain relatively constant and are not influenced by environmental factors.", "id": "s18-2"}, {"s": 18, "t": "mc", "q": "Which of these temperature measurements would most likely be accurate?", "o": ["An oral temperature on an 82-year-old who just drank decaf coffee", "A urinary bladder temperature on a 55-year-old with polyuria", "A rectal temperature on an 18-month-old with constipation", "An axillary temperature on a 3-month-old held in the mother's arms in a onesie"], "a": [1], "r": "The urinary bladder is a core temperature site, which remains relatively constant and is not influenced by environmental factors. A recent hot or cold drink invalidates an oral temperature, constipation interferes with a rectal reading, and an axillary reading is a surface site affected by the infant being held and clothed.", "id": "s18-3"}, {"s": 19, "t": "sata", "q": "On which patients should an oral temperature NOT be taken? Select all that apply.", "o": ["Children under 3 years of age", "Confused patients", "Patients who have just had oral surgery", "Patients on seizure precautions", "Patients who have just had a hot or cold drink", "Patients who are febrile"], "a": [0, 1, 2, 3, 4], "r": "An oral temperature should not be taken on children under 3 years of age, confused patients, patients who have just had oral surgery, patients on seizure precautions, or patients who have just had a hot or cold drink.", "id": "s19-1"}, {"s": 19, "t": "mc", "q": "A patient is on seizure precautions. Which temperature route is contraindicated?", "o": ["Axillary", "Tympanic", "Oral", "Temporal"], "a": [2], "r": "An oral temperature should not be taken on a patient who is on seizure precautions.", "id": "s19-2"}];
+const TITLES = {"1": "Related Concepts", "2": "Normothermia and Heat Production", "3": "Heat Loss Mechanisms", "4": "Sensors, Hypothalamus and Effector System", "5": "Hyperthermia and Fever", "6": "Heat Exhaustion", "7": "Heat Stroke", "8": "Medication Risk Factors", "9": "When a Fever Is Not Treated", "10": "Induced and Accidental Hypothermia", "11": "Hypothermia Risk Factors", "12": "Frostbite and Reperfusion Damage", "13": "Iloprost (Aurlumyn)", "14": "Rewarming the Core First", "15": "Rewarming Outside the Medical Setting", "16": "Newborns", "17": "Children, Adolescents and Older Adults", "18": "Core Body Temperatures", "19": "Oral Temperature Contraindications"};
+const GROUPS = [{"name": "Normal thermoregulation", "slides": [1, 2, 3, 4]}, {"name": "Hyperthermia", "slides": [5, 6, 7, 8, 9]}, {"name": "Hypothermia and frostbite", "slides": [10, 11, 12, 13]}, {"name": "Rewarming", "slides": [14, 15]}, {"name": "Lifespan considerations", "slides": [16, 17]}, {"name": "Measuring temperature", "slides": [18, 19]}];
+const SECTION_LABEL = {"1": "Slide 4", "2": "Slide 5", "3": "Slides 5-6", "4": "Slide 7", "5": "Slide 9", "6": "Slide 10", "7": "Slide 11", "8": "Slide 12", "9": "Slide 13", "10": "Slide 15", "11": "Slide 16", "12": "Slide 17", "13": "Slide 18", "14": "Slides 20-21", "15": "Slide 22", "16": "Slide 23", "17": "Slide 24", "18": "Slides 26, 28", "19": "Slide 29"};
+const TYPE_LABEL = {mc:"Multiple choice", sata:"Select all that apply", match:"Matching", grid:"Matrix grid"};
+const LETTERS = "ABCDEFGHIJ";
+const KEY_SEEN = "thermoTB.seen.v1";
+const KEY_MISSED = "thermoTB.missed.v1";
+const KEY_RUNS = "thermoTB.runs.v1";
+
+/* ---------------- storage (best effort) ---------------- */
+function load(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function save(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+let seen = new Set(load(KEY_SEEN, []));
+let missed = new Set(load(KEY_MISSED, []));
+let runs = load(KEY_RUNS, []);
+function persist(){
+  save(KEY_SEEN, [...seen]); save(KEY_MISSED, [...missed]); save(KEY_RUNS, runs.slice(-40));
+}
+
+/* ---------------- helpers ---------------- */
+function el(tag, cls, txt){
+  const n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(txt !== undefined) n.textContent = txt;
+  return n;
+}
+function shuffle(a){
+  a = [...a];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function byId(id){ return QUESTIONS.find(q => q.id === id); }
+function plural(n, w){ return n + " " + w + (n === 1 ? "" : "s"); }
+function mmss(ms){
+  const s = Math.floor(ms/1000);
+  return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+}
+
+/* ---------------- question rendering ---------------- */
+/* mode: "study" = check button + instant rationale; "exam" = collect only; "review" = show result */
+function renderQuestion(q, opts){
+  const o = opts || {};
+  const card = el("article","q");
+  card.dataset.type = q.t;
+
+  const head = el("div","qhead");
+  if(o.label !== undefined) head.appendChild(el("span","qnum", o.label));
+  head.appendChild(el("span","qtype", TYPE_LABEL[q.t]));
+  if(o.showSlide) head.appendChild(el("span","qslide","Slide " + q.s));
+  card.appendChild(head);
+  card.appendChild(el("p","stem", q.q));
+
+  const state = o.state || {};          // {picked:[origIdx...], order:[...], match:{}}
+  if(!state.order) state.order = q.t === "grid" ? [...Array(q.rows.length).keys()]
+    : shuffle([...Array(q.t === "match" ? q.p.length : q.o.length).keys()]);
+
+  if(q.t === "match") buildMatch(card, q, state, o);
+  else if(q.t === "grid") buildGrid(card, q, state, o);
+  else buildChoice(card, q, state, o);
+
+  if(o.mode === "review"){
+    const gotIt = isCorrect(q, state);
+    const line = q.t === "match" ? "Correct matches are shown beside each item."
+      : q.t === "grid" ? "The correct boxes are ticked below."
+      : "Answer: " + answerLetters(q, state).join(", ") + ".";
+    const r = el("div","rat");
+    r.appendChild(el("span","ans", (state.picked === undefined && !state.match ? "Skipped. " : (gotIt ? "Correct. " : "Not quite. ")) + line));
+    if(q.r) r.appendChild(document.createTextNode(q.r));
+    card.appendChild(r);
+    if(q.f){
+      const n = el("div","note");
+      n.appendChild(el("span","t","Instructor update. "));
+      n.appendChild(document.createTextNode(q.f));
+      card.appendChild(n);
+    }
+  }
+  return card;
+}
+
+function answerLetters(q, state){
+  if(q.t === "match") return state.order.map((_, i) => LETTERS[i]);
+  if(q.t === "grid") return [];
+  const ans = new Set(q.a);
+  return state.order.map((orig, pos) => ans.has(orig) ? LETTERS[pos] : null)
+                    .filter(Boolean).sort();
+}
+
+function isCorrect(q, state){
+  if(q.t === "grid"){
+    const got = state.grid || {};
+    return q.rows.every((_, r) => {
+      const want = new Set(q.a[r]);
+      const have = new Set(got[r] || []);
+      if(want.size !== have.size) return false;
+      for(const c of want) if(!have.has(c)) return false;
+      return true;
+    });
+  }
+  if(q.t === "match"){
+    return q.p.every((_, idx) => (state.match || {})[idx] === LETTERS[state.order.indexOf(idx)]);
+  }
+  const picked = new Set(state.picked || []);
+  const ans = new Set(q.a);
+  if(picked.size !== ans.size) return false;
+  for(const a of ans) if(!picked.has(a)) return false;
+  return true;
+}
+
+function buildChoice(card, q, state, o){
+  const multi = q.t === "sata";
+  if(!state.picked) state.picked = [];
+  const picked = new Set(state.picked);
+  const list = el("ul","opts");
+  const buttons = [];
+  const locked = o.mode === "review";
+
+  state.order.forEach((orig, pos) => {
+    const li = el("li");
+    const b = el("button","opt" + (multi ? "" : " round"));
+    b.type = "button";
+    b.setAttribute("aria-pressed", picked.has(orig) ? "true" : "false");
+    b.appendChild(el("span","box", LETTERS[pos]));
+    b.appendChild(el("span","txt", q.o[orig]));
+    b.dataset.orig = orig;
+    if(locked) b.disabled = true;
+    else b.addEventListener("click", () => {
+      if(!multi){ buttons.forEach(x => x.setAttribute("aria-pressed","false")); picked.clear(); }
+      const on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", on ? "false" : "true");
+      if(on) picked.delete(orig); else picked.add(orig);
+      state.picked = [...picked];
+      if(o.onChange) o.onChange();
+    });
+    buttons.push(b);
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+  card.appendChild(list);
+
+  if(locked){
+    const ans = new Set(q.a);
+    buttons.forEach(b => {
+      const i = Number(b.dataset.orig);
+      const chosen = picked.has(i);
+      b.setAttribute("aria-pressed","false");
+      if(ans.has(i) && chosen) b.classList.add("correct");
+      else if(ans.has(i)) b.classList.add("missed");
+      else if(chosen) b.classList.add("incorrect");
+    });
+    return;
+  }
+
+  if(o.mode === "study"){
+    const btn = el("button","btn small", multi ? "Check answers" : "Check answer");
+    btn.type = "button";
+    card.appendChild(btn);
+    btn.addEventListener("click", () => {
+      if(btn.disabled || picked.size === 0) return;
+      btn.disabled = true; btn.textContent = "Answer shown"; btn.classList.add("ghost");
+      const ans = new Set(q.a);
+      buttons.forEach(b => {
+        const i = Number(b.dataset.orig);
+        const chosen = picked.has(i);
+        b.disabled = true; b.setAttribute("aria-pressed","false");
+        if(ans.has(i) && chosen) b.classList.add("correct");
+        else if(ans.has(i)) b.classList.add("missed");
+        else if(chosen) b.classList.add("incorrect");
+      });
+      finishStudy(card, q, state);
+    });
+  }
+}
+
+
+function buildGrid(card, q, state, o){
+  if(!state.grid) state.grid = {};
+  const locked = o.mode === "review";
+  const wrap = el("div","gridwrap");
+  const tbl = el("table","matrix");
+
+  const thead = el("thead");
+  const hr = el("tr");
+  hr.appendChild(el("th", null, q.rowHead || "Client finding"));
+  q.cols.forEach(c => hr.appendChild(el("th","col", c)));
+  thead.appendChild(hr);
+  tbl.appendChild(thead);
+
+  const tbody = el("tbody");
+  const cells = [];
+  q.rows.forEach((label, r) => {
+    const tr = el("tr");
+    tr.appendChild(el("td","rowlab", label));
+    q.cols.forEach((cname, c) => {
+      const td = el("td","cell");
+      const box = el("button","gbox");
+      box.type = "button";
+      box.dataset.row = String(r);
+      box.dataset.col = String(c);
+      box.setAttribute("aria-label", label + ": " + cname);
+      box.setAttribute("aria-pressed", "false");
+      const on = (state.grid[r] || []).includes(c);
+      if(on){ box.classList.add("on"); box.setAttribute("aria-pressed","true"); box.textContent = "✕"; }
+      if(locked) box.disabled = true;
+      else box.addEventListener("click", () => {
+        if(box.disabled) return;
+        const list = new Set(state.grid[r] || []);
+        if(list.has(c)) list.delete(c); else list.add(c);
+        state.grid[r] = [...list];
+        const nowOn = list.has(c);
+        box.classList.toggle("on", nowOn);
+        box.setAttribute("aria-pressed", String(nowOn));
+        box.textContent = nowOn ? "✕" : "";
+        if(o.onChange) o.onChange();
+      });
+      td.appendChild(box);
+      tr.appendChild(td);
+      cells.push({box, r, c});
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  wrap.appendChild(tbl);
+  card.appendChild(wrap);
+
+  function mark(){
+    cells.forEach(({box, r, c}) => {
+      box.disabled = true;
+      const want = (q.a[r] || []).includes(c);
+      const got = (state.grid[r] || []).includes(c);
+      if(want && got) box.classList.add("correct");
+      else if(want){ box.classList.add("missed"); box.textContent = "✕"; }
+      else if(got) box.classList.add("incorrect");
+    });
+  }
+  if(locked){ mark(); return; }
+
+  if(o.mode === "study"){
+    const btn = el("button","btn small","Check the grid");
+    btn.type = "button";
+    card.appendChild(btn);
+    btn.addEventListener("click", () => {
+      if(btn.disabled) return;
+      if(!Object.values(state.grid).some(v => v && v.length)) return;
+      btn.disabled = true; btn.textContent = "Answer shown"; btn.classList.add("ghost");
+      mark();
+      finishStudy(card, q, state);
+    });
+  }
+}
+
+function buildMatch(card, q, state, o){
+  if(!state.match) state.match = {};
+  const locked = o.mode === "review";
+  const bank = el("div","bank");
+  bank.appendChild(el("div","lbl","Answer bank"));
+  const ol = el("ol"); ol.type = "A";
+  state.order.forEach(i => ol.appendChild(el("li", null, q.p[i][1])));
+  bank.appendChild(ol);
+  card.appendChild(bank);
+
+  const rows = [];
+  const holder = el("div","pairs");
+  q.p.forEach((pair, idx) => {
+    const row = el("div","pair");
+    row.appendChild(el("span","prompt", (idx+1) + ". " + pair[0]));
+    const sel = el("select");
+    sel.setAttribute("aria-label","Match for " + pair[0]);
+    const ph = el("option", null, "—"); ph.value = "";
+    sel.appendChild(ph);
+    state.order.forEach((_, pos) => {
+      const op = el("option", null, LETTERS[pos]); op.value = LETTERS[pos];
+      sel.appendChild(op);
+    });
+    sel.value = state.match[idx] || "";
+    const verdict = el("span","verdict","");
+    if(locked) sel.disabled = true;
+    else sel.addEventListener("change", () => {
+      state.match[idx] = sel.value;
+      if(o.onChange) o.onChange();
+    });
+    row.appendChild(sel); row.appendChild(verdict);
+    holder.appendChild(row);
+    rows.push({row, sel, verdict, correctLetter: LETTERS[state.order.indexOf(idx)]});
+  });
+  card.appendChild(holder);
+
+  function mark(){
+    rows.forEach(r => {
+      r.sel.disabled = true;
+      if(r.sel.value === r.correctLetter){ r.row.classList.add("ok"); r.verdict.textContent = r.correctLetter; }
+      else { r.row.classList.add("no"); r.verdict.textContent = "→ " + r.correctLetter; }
+    });
+  }
+  if(locked){ mark(); return; }
+
+  if(o.mode === "study"){
+    const btn = el("button","btn small","Check matches");
+    btn.type = "button";
+    card.appendChild(btn);
+    btn.addEventListener("click", () => {
+      if(btn.disabled) return;
+      if(rows.every(r => r.sel.value === "")) return;
+      btn.disabled = true; btn.textContent = "Answer shown"; btn.classList.add("ghost");
+      mark();
+      finishStudy(card, q, state);
+    });
+  }
+}
+
+/* study-mode instant feedback */
+let studyAnswered = 0, studyCorrect = 0;
+function finishStudy(card, q, state){
+  const gotIt = isCorrect(q, state);
+  const line = q.t === "match" ? "Correct matches are shown beside each item."
+    : q.t === "grid" ? "The correct boxes are ticked below."
+    : "Answer: " + answerLetters(q, state).join(", ") + ".";
+  const r = el("div","rat");
+  r.appendChild(el("span","ans", (gotIt ? "Correct. " : "Not quite. ") + line));
+  if(q.r) r.appendChild(document.createTextNode(q.r));
+  card.appendChild(r);
+  if(q.f){
+    const n = el("div","note");
+    n.appendChild(el("span","t","Instructor update. "));
+    n.appendChild(document.createTextNode(q.f));
+    card.appendChild(n);
+  }
+  seen.add(q.id);
+  if(gotIt) missed.delete(q.id); else missed.add(q.id);
+  persist();
+  studyAnswered++; if(gotIt) studyCorrect++;
+  const t = document.getElementById("studyTally");
+  if(t) t.innerHTML = "Answered <b>"+studyAnswered+"</b> — <b>"+studyCorrect+"</b> correct";
+}
+
+/* ---------------- STUDY MODE ---------------- */
+function viewStudy(){
+  const app = document.getElementById("app");
+  app.textContent = "";
+  studyAnswered = 0; studyCorrect = 0;
+
+  const bar = el("div","toolbar");
+  const lab = el("label", null, "Jump to"); lab.setAttribute("for","jump");
+  const jump = el("select","jump"); jump.id = "jump";
+  const allOpt = el("option", null, "All slides"); allOpt.value = "top";
+  jump.appendChild(allOpt);
+  bar.appendChild(lab); bar.appendChild(jump);
+
+  const chips = el("div","chips");
+  [["all","All"],["mc","Multiple choice"],["sata","Select all"],["match","Matching"],["grid","Matrix grid"]].forEach(([f,t],i) => {
+    const c = el("button","chip",t);
+    c.dataset.filter = f;
+    c.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    chips.appendChild(c);
+  });
+  bar.appendChild(chips);
+  const tally = el("div","tally"); tally.id = "studyTally";
+  tally.innerHTML = "Answered <b>0</b> — <b>0</b> correct";
+  bar.appendChild(tally);
+  app.appendChild(bar);
+
+  const bySlide = new Map();
+  QUESTIONS.forEach(q => { if(!bySlide.has(q.s)) bySlide.set(q.s, []); bySlide.get(q.s).push(q); });
+
+  let n = 0;
+  [...bySlide.keys()].sort((a,b)=>a-b).forEach(slide => {
+    const sec = el("section","slide");
+    sec.id = "slide-" + slide;
+    sec.appendChild(el("h2", null, TITLES[slide] || ("Slide " + slide)));
+    const items = bySlide.get(slide);
+    sec.appendChild(el("p","meta",(SECTION_LABEL[slide] || ("Slide " + slide)) + " · " + plural(items.length,"question")));
+    items.forEach(q => { n++; sec.appendChild(renderQuestion(q, {mode:"study", label:String(n)})); });
+    app.appendChild(sec);
+    const op = el("option", null, "Slide " + slide + " — " + (TITLES[slide] || ""));
+    op.value = sec.id;
+    jump.appendChild(op);
+  });
+
+  jump.addEventListener("change", () => {
+    if(jump.value === "top"){ window.scrollTo({top:0,behavior:"smooth"}); return; }
+    const t = document.getElementById(jump.value);
+    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  chips.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const f = chip.dataset.filter;
+      chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === chip)));
+      app.querySelectorAll("article.q").forEach(c =>
+        c.classList.toggle("hidden", f !== "all" && c.dataset.type !== f));
+      app.querySelectorAll("section.slide").forEach(sec => {
+        const vis = [...sec.querySelectorAll("article.q")].some(c => !c.classList.contains("hidden"));
+        sec.classList.toggle("hidden", !vis);
+      });
+    });
+  });
+}
+
+/* ---------------- EXAM SETUP ---------------- */
+const setup = {
+  scope: "all",        // "all" | "unit" | "slide" | "missed"
+  unit: 0,             // index into GROUPS when scope === "unit"
+  slide: null,         // slide number when scope === "slide"
+  types: new Set(["mc","sata","match","grid"]),
+  limit: 25,
+  fresh: true
+};
+const ALL_SLIDES = [...new Set(QUESTIONS.map(q => q.s))].sort((a,b) => a-b);
+
+function poolFor(s){
+  let pool = QUESTIONS.filter(q => s.types.has(q.t));
+  if(s.scope === "missed") return pool.filter(q => missed.has(q.id));
+  if(s.scope === "unit"){
+    const g = GROUPS[s.unit] || {slides:[]};
+    return pool.filter(q => g.slides.includes(q.s));
+  }
+  if(s.scope === "slide") return pool.filter(q => q.s === s.slide);
+  return pool;
+}
+
+function viewExamSetup(){
+  const app = document.getElementById("app");
+  app.textContent = "";
+
+  const panel = el("div","panel");
+  panel.appendChild(el("h2", null, "Take a practice exam"));
+  panel.appendChild(el("p","sub","Two quick choices and you're in. Questions and answer choices come up in a different order every time, and you'll get ones you haven't seen before you get any repeats."));
+
+  /* --- 1. what to practice --- */
+  const f1 = el("div","field");
+  f1.appendChild(el("div","h","1. What do you want to practice?"));
+  const choices = el("div","choices");
+
+  function choice(scope, title, sub, disabled){
+    const b = el("button","choice");
+    b.type = "button";
+    b.dataset.scope = scope;
+    b.setAttribute("aria-pressed", String(setup.scope === scope));
+    b.appendChild(el("span","dot"));
+    const w = el("span");
+    w.appendChild(el("span","t", title));
+    if(sub) w.appendChild(el("span","s", sub));
+    b.appendChild(w);
+    if(disabled) b.disabled = true;
+    return b;
+  }
+
+  choices.appendChild(choice("all","Everything",
+    ALL_SLIDES.length + " topics · " + QUESTIONS.length + " questions"));
+  choices.appendChild(choice("unit","One unit",
+    "A group of related topics, like injections or medication errors"));
+  choices.appendChild(choice("slide","One topic",
+    "A single slide you want to hammer"));
+  choices.appendChild(choice("missed","Only what I've gotten wrong",
+    missed.size ? plural(missed.size,"question") + " to clean up"
+                : "Nothing yet — this fills up as you answer questions",
+    missed.size === 0));
+  f1.appendChild(choices);
+
+  /* dropdown that appears under the unit / topic choices */
+  const picker = el("div","picker");
+  const sel = el("select");
+  sel.id = "scopePicker";
+  picker.appendChild(sel);
+  f1.appendChild(picker);
+  panel.appendChild(f1);
+
+  /* --- 2. how long --- */
+  const f2 = el("div","field");
+  f2.appendChild(el("div","h","2. How many questions?"));
+  const sizes = el("div","sizes");
+  [[10,"Quick check"],[25,"Standard"],[50,"Long"],["all","Everything"]].forEach(([v,lab]) => {
+    const b = el("button","size");
+    b.type = "button";
+    b.dataset.limit = v;
+    b.setAttribute("aria-pressed", String(setup.limit === v));
+    b.appendChild(el("span","t", v === "all" ? "All" : String(v)));
+    b.appendChild(el("span","s", lab));
+    sizes.appendChild(b);
+  });
+  f2.appendChild(sizes);
+  panel.appendChild(f2);
+
+  /* --- start --- */
+  const bar = el("div","startbar");
+  const start = el("button","btn","Start exam");
+  bar.appendChild(start);
+  const info = el("div","poolinfo");
+  bar.appendChild(info);
+  const warnBox = el("div","warn hidden");
+  bar.appendChild(warnBox);
+  panel.appendChild(bar);
+
+  /* --- collapsed extras --- */
+  const more = el("details","more");
+  const sum = document.createElement("summary");
+  sum.textContent = "More options";
+  more.appendChild(sum);
+  const fT = el("div","field");
+  fT.appendChild(el("div","d","Question formats to include:"));
+  [["mc","Multiple choice"],["sata","Select all that apply"],["match","Matching"]].forEach(([v,t]) => {
+    const l = el("label","cb");
+    const cb = el("input"); cb.type = "checkbox"; cb.dataset.type = v;
+    cb.checked = setup.types.has(v);
+    l.appendChild(cb); l.appendChild(el("span", null, t));
+    fT.appendChild(l);
+  });
+  const lf = el("label","cb");
+  const cbF = el("input"); cbF.type = "checkbox"; cbF.checked = !setup.fresh;
+  cbF.id = "repeatCb";
+  lf.appendChild(cbF);
+  lf.appendChild(el("span", null, "Let questions I've already seen come up again"));
+  fT.appendChild(lf);
+  more.appendChild(fT);
+  panel.appendChild(more);
+
+  app.appendChild(panel);
+
+  /* ----- wiring ----- */
+  function fillPicker(){
+    sel.textContent = "";
+    if(setup.scope === "unit"){
+      GROUPS.forEach((g, i) => {
+        const n = QUESTIONS.filter(q => g.slides.includes(q.s)).length;
+        const o = el("option", null, g.name + " (" + n + ")");
+        o.value = String(i);
+        sel.appendChild(o);
+      });
+      sel.value = String(setup.unit);
+    } else if(setup.scope === "slide"){
+      ALL_SLIDES.forEach(s => {
+        const n = QUESTIONS.filter(q => q.s === s).length;
+        const o = el("option", null, (TITLES[s] || ("Slide " + s)) + "  (" + n + " questions)");
+        o.value = String(s);
+        sel.appendChild(o);
+      });
+      if(setup.slide === null) setup.slide = ALL_SLIDES[0];
+      sel.value = String(setup.slide);
+    }
+    picker.classList.toggle("hidden", setup.scope !== "unit" && setup.scope !== "slide");
+  }
+
+  function refresh(){
+    const pool = poolFor(setup);
+    const unseen = pool.filter(q => !seen.has(q.id)).length;
+    const want = setup.limit === "all" ? pool.length : Math.min(setup.limit, pool.length);
+    info.innerHTML = "This exam will be <b>" + want + "</b> question" + (want === 1 ? "" : "s") +
+      ", drawn from " + pool.length + " available.";
+    start.disabled = pool.length === 0;
+    let msg = "";
+    if(pool.length === 0){
+      msg = "Nothing matches these settings. Check the question formats under More options.";
+    } else if(setup.fresh && unseen < want){
+      const rep = want - unseen;
+      msg = "You've already worked through most of this set, so " + rep + " question" +
+        (rep === 1 ? "" : "s") + " will come up again. Pick a wider set, or clear your history at the bottom of the page to start fresh.";
+    }
+    warnBox.textContent = msg;
+    warnBox.classList.toggle("hidden", !msg);
+  }
+
+  choices.addEventListener("click", e => {
+    const b = e.target.closest("[data-scope]");
+    if(!b || b.disabled) return;
+    setup.scope = b.dataset.scope;
+    choices.querySelectorAll("[data-scope]").forEach(c =>
+      c.setAttribute("aria-pressed", String(c === b)));
+    fillPicker(); refresh();
+  });
+  sel.addEventListener("change", () => {
+    if(setup.scope === "unit") setup.unit = Number(sel.value);
+    else if(setup.scope === "slide") setup.slide = Number(sel.value);
+    refresh();
+  });
+  sizes.addEventListener("click", e => {
+    const b = e.target.closest("[data-limit]");
+    if(!b) return;
+    setup.limit = b.dataset.limit === "all" ? "all" : Number(b.dataset.limit);
+    sizes.querySelectorAll("[data-limit]").forEach(c =>
+      c.setAttribute("aria-pressed", String(c === b)));
+    refresh();
+  });
+  more.addEventListener("change", e => {
+    const cb = e.target.closest("input");
+    if(!cb) return;
+    if(cb.dataset.type){
+      if(cb.checked) setup.types.add(cb.dataset.type); else setup.types.delete(cb.dataset.type);
+    } else {
+      setup.fresh = !cb.checked;
+    }
+    refresh();
+  });
+  start.addEventListener("click", () => startExam());
+
+  fillPicker();
+  refresh();
+}
+
+/* ---------------- EXAM RUNNER ---------------- */
+let exam = null;
+
+function startExam(){
+  const pool = poolFor(setup);
+  if(!pool.length) return;
+  const want = setup.limit === "all" ? pool.length : Math.min(setup.limit, pool.length);
+
+  let chosen;
+  if(setup.fresh){
+    const unseen = shuffle(pool.filter(q => !seen.has(q.id)));
+    const rest = shuffle(pool.filter(q => seen.has(q.id)));
+    chosen = unseen.concat(rest).slice(0, want);
+    chosen = shuffle(chosen);
+  } else {
+    chosen = shuffle(pool).slice(0, want);
+  }
+
+  exam = {
+    items: chosen.map(q => ({ id: q.id, state: {}, flagged: false })),
+    i: 0,
+    started: Date.now(),
+    submitted: false
+  };
+  viewExam();
+}
+
+function examAnsweredCount(){
+  return exam.items.filter(it => {
+    const q = byId(it.id);
+    if(q.t === "grid") return Object.values(it.state.grid || {}).some(v => v && v.length);
+    if(q.t === "match") return Object.values(it.state.match || {}).some(v => v);
+    return (it.state.picked || []).length > 0;
+  }).length;
+}
+
+function viewExam(){
+  const app = document.getElementById("app");
+  app.textContent = "";
+
+  const top = el("div","examtop");
+  const pos = el("div","pos"); pos.id = "examPos";
+  const prog = el("div","prog"); const fill = el("i"); prog.appendChild(fill);
+  const timer = el("div","timer"); timer.id = "examTimer";
+  const quit = el("button","btn ghost small","End exam");
+  top.appendChild(pos); top.appendChild(prog); top.appendChild(timer); top.appendChild(quit);
+  app.appendChild(top);
+
+  const holder = el("div"); holder.id = "examHolder";
+  app.appendChild(holder);
+
+  const grid = el("div","navgrid"); grid.id = "examGrid";
+  app.appendChild(grid);
+
+  quit.addEventListener("click", () => submitExam());
+
+  const tick = setInterval(() => {
+    const t = document.getElementById("examTimer");
+    if(!t || !exam || exam.submitted){ clearInterval(tick); return; }
+    t.textContent = mmss(Date.now() - exam.started);
+  }, 1000);
+
+  drawExamGrid();
+  drawExamQuestion();
+
+  function drawExamGrid(){
+    grid.textContent = "";
+    exam.items.forEach((it, idx) => {
+      const b = el("button","navbtn", String(idx+1));
+      const q = byId(it.id);
+      const done = q.t === "grid"
+        ? Object.values(it.state.grid || {}).some(v => v && v.length)
+        : q.t === "match"
+        ? Object.values(it.state.match || {}).some(v => v)
+        : (it.state.picked || []).length > 0;
+      if(done) b.classList.add("done");
+      if(it.flagged) b.classList.add("flag");
+      if(idx === exam.i) b.classList.add("here");
+      b.addEventListener("click", () => { exam.i = idx; drawExamQuestion(); drawExamGrid(); });
+      grid.appendChild(b);
+    });
+  }
+
+  function drawExamQuestion(){
+    const it = exam.items[exam.i];
+    const q = byId(it.id);
+    holder.textContent = "";
+    holder.appendChild(renderQuestion(q, {
+      mode: "exam",
+      label: String(exam.i + 1),
+      showSlide: false,
+      state: it.state,
+      onChange: () => { drawExamGrid(); updateHead(); }
+    }));
+
+    const nav = el("div","runnav");
+    const prev = el("button","btn ghost","Previous");
+    prev.disabled = exam.i === 0;
+    prev.addEventListener("click", () => { exam.i--; drawExamQuestion(); drawExamGrid(); });
+    const flagBtn = el("button","btn ghost", it.flagged ? "Unflag" : "Flag for review");
+    flagBtn.addEventListener("click", () => {
+      it.flagged = !it.flagged; drawExamQuestion(); drawExamGrid();
+    });
+    nav.appendChild(prev); nav.appendChild(flagBtn);
+    const sp = el("span","sp");
+    nav.appendChild(sp);
+    if(exam.i < exam.items.length - 1){
+      const next = el("button","btn","Next");
+      next.addEventListener("click", () => { exam.i++; drawExamQuestion(); drawExamGrid(); });
+      nav.appendChild(next);
+    } else {
+      const sub = el("button","btn","Submit exam");
+      sub.addEventListener("click", () => submitExam());
+      nav.appendChild(sub);
+    }
+    holder.appendChild(nav);
+    updateHead();
+  }
+
+  function updateHead(){
+    const done = examAnsweredCount();
+    document.getElementById("examPos").textContent =
+      "Question " + (exam.i + 1) + " of " + exam.items.length;
+    fill.style.width = (100 * done / exam.items.length) + "%";
+  }
+}
+
+function submitExam(){
+  const unanswered = exam.items.length - examAnsweredCount();
+  if(unanswered > 0 && !exam.submitted){
+    if(!confirm(unanswered + " question" + (unanswered===1?" is":"s are") +
+        " still unanswered. Submit anyway?")) return;
+  }
+  exam.submitted = true;
+  exam.elapsed = Date.now() - exam.started;
+
+  exam.items.forEach(it => {
+    const q = byId(it.id);
+    it.correct = isCorrect(q, it.state);
+    seen.add(q.id);
+    if(it.correct) missed.delete(q.id); else missed.add(q.id);
+  });
+  const right = exam.items.filter(it => it.correct).length;
+  runs.push({ when: Date.now(), n: exam.items.length, right, ms: exam.elapsed });
+  persist();
+  viewResults();
+}
+
+/* ---------------- RESULTS ---------------- */
+function viewResults(){
+  const app = document.getElementById("app");
+  app.textContent = "";
+  const right = exam.items.filter(it => it.correct).length;
+  const n = exam.items.length;
+  const pct = Math.round(100 * right / n);
+
+  const panel = el("div","panel");
+  panel.appendChild(el("div","scorebig", pct + "%"));
+  panel.appendChild(el("div","scoresub",
+    right + " of " + n + " correct · " + mmss(exam.elapsed) + " elapsed"));
+
+  /* breakdown by slide */
+  const bySlide = new Map();
+  exam.items.forEach(it => {
+    const q = byId(it.id);
+    if(!bySlide.has(q.s)) bySlide.set(q.s, {n:0, r:0});
+    const b = bySlide.get(q.s); b.n++; if(it.correct) b.r++;
+  });
+  const weak = [...bySlide.entries()].filter(([,b]) => b.r < b.n).sort((a,b) =>
+    (a[1].r/a[1].n) - (b[1].r/b[1].n));
+
+  if(weak.length){
+    panel.appendChild(el("div","h","Where to focus next"));
+    const scroll = el("div","scroll");
+    const tb = el("table","bd");
+    const hr = el("tr");
+    ["Slide","Score"].forEach((h,i) => {
+      const th = el("th", i ? "num" : null, h); hr.appendChild(th);
+    });
+    const thead = document.createElement("thead"); thead.appendChild(hr); tb.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    weak.forEach(([s,b]) => {
+      const tr = el("tr");
+      tr.appendChild(el("td", null, s + " — " + (TITLES[s] || "")));
+      tr.appendChild(el("td","num", b.r + "/" + b.n));
+      tbody.appendChild(tr);
+    });
+    tb.appendChild(tbody);
+    scroll.appendChild(tb);
+    panel.appendChild(scroll);
+  } else {
+    panel.appendChild(el("p","sub","Clean sweep — nothing missed on this one."));
+  }
+
+  const bar = el("div","poolbar");
+  const again = el("button","btn","Build another exam");
+  again.addEventListener("click", () => setMode("exam"));
+  bar.appendChild(again);
+  const retry = el("button","btn ghost","Retake the ones I missed");
+  retry.disabled = right === n;
+  retry.addEventListener("click", () => {
+    const ids = exam.items.filter(it => !it.correct).map(it => it.id);
+    exam = { items: shuffle(ids).map(id => ({id, state:{}, flagged:false})),
+             i:0, started:Date.now(), submitted:false };
+    viewExam();
+    window.scrollTo({top:0});
+  });
+  bar.appendChild(retry);
+  panel.appendChild(bar);
+  app.appendChild(panel);
+
+  /* full review */
+  app.appendChild(el("h2", null, "Review every question"));
+  const note = el("p","sub","Your answer is marked; the correct answer is outlined in green.");
+  note.style.marginBottom = "1.1rem";
+  app.appendChild(note);
+  exam.items.forEach((it, idx) => {
+    const q = byId(it.id);
+    app.appendChild(renderQuestion(q, {
+      mode: "review", label: String(idx+1), showSlide: true, state: it.state
+    }));
+  });
+}
+
+
+/* ---------------- mode switching ---------------- */
+function setMode(m){
+  document.querySelectorAll(".mode").forEach(b =>
+    b.setAttribute("aria-selected", String(b.dataset.mode === m)));
+  if(m === "exam") viewExamSetup();
+  else viewStudy();
+  window.scrollTo({top:0});
+}
+document.querySelectorAll(".mode").forEach(b =>
+  b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+document.getElementById("wipe").addEventListener("click", () => {
+  if(!confirm("Clear your attempted-question history and exam scores on this device?")) return;
+  seen = new Set(); missed = new Set(); runs = [];
+  persist();
+  setMode(document.querySelector('.mode[aria-selected="true"]').dataset.mode);
+});
+
+document.getElementById("total").textContent = QUESTIONS.length;
+setMode("study");
+</script>
+</body>
+</html>
